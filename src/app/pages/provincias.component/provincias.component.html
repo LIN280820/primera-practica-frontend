@@ -1,0 +1,44 @@
+<mat-card class="contenedor">
+  <mat-card-title>Registrar provincia</mat-card-title>
+
+  <form [formGroup]="provinciaForm" (ngSubmit)="guardar()" class="formulario">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre de la provincia</mat-label>
+      <input matInput type="text" formControlName="nombre">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>País</mat-label>
+      <mat-select formControlName="paisId">
+        <mat-option value="">Seleccione un país</mat-option>
+        <mat-option *ngFor="let p of paises" [value]="p.id">
+          {{ p.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">
+      {{ editando ? 'Actualizar' : 'Guardar' }}
+    </button>
+
+  </form>
+</mat-card>
+
+<mat-card class="contenedor">
+  <mat-card-title>Lista de provincias</mat-card-title>
+
+  <mat-list>
+    <mat-list-item *ngFor="let p of provincias">
+      <span>{{ p.nombre }} - {{ p.pais?.nombre }}</span>
+
+      <button mat-button color="primary" type="button" (click)="editar(p)">
+        Editar
+      </button>
+
+      <button mat-button color="warn" type="button" (click)="eliminar(p.id!)">
+        Eliminar
+      </button>
+    </mat-list-item>
+  </mat-list>
+</mat-card>
