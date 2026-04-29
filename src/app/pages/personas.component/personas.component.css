@@ -1,0 +1,16 @@
+.contenedor {
+  max-width: 700px;
+  margin: 24px auto;
+  padding: 16px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+mat-list-item {
+  display: flex;
+  justify-content: space-between;
+}

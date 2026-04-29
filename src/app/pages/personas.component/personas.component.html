@@ -1,1 +1,69 @@
-<p>personas.component works!</p>
+<mat-card class="contenedor">
+    <mat-card-title>Registrar persona</mat-card-title>
+
+    <form [formGroup]="personaForm" (ngSubmit)="guardar()" class="formulario">
+
+        <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" formControlName="nombre">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Apellido</mat-label>
+            <input matInput type="text" formControlName="apellido">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Edad</mat-label>
+            <input matInput type="number" formControlName="edad">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>País</mat-label>
+            <mat-select formControlName="paisId" (selectionChange)="listarProvinciasPorPais()">
+                <mat-option value="">Seleccione un país</mat-option>
+                <mat-option *ngFor="let p of paises" [value]="p.id">
+                    {{ p.nombre }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Provincia</mat-label>
+            <mat-select formControlName="provinciaId">
+                <mat-option value="">Seleccione una provincia</mat-option>
+                <mat-option *ngFor="let pr of provincias" [value]="pr.id">
+                    {{ pr.nombre }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">
+            {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+
+    </form>
+</mat-card>
+
+<mat-card class="contenedor">
+    <mat-card-title>Lista de personas</mat-card-title>
+
+    <mat-list>
+        <mat-list-item *ngFor="let p of personas">
+            <span>
+                {{ p.nombre }} {{ p.apellido }} -
+                {{ p.edad }} años -
+                {{ p.pais?.nombre }} -
+                {{ p.provincia?.nombre }}
+            </span>
+
+            <button mat-button color="primary" type="button" (click)="editar(p)">
+                Editar
+            </button>
+
+            <button mat-button color="warn" type="button" (click)="eliminar(p.id!)">
+                Eliminar
+            </button>
+        </mat-list-item>
+    </mat-list>
+</mat-card>

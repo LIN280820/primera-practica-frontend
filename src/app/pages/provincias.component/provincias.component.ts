@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ProvinciasService } from '../../services/provincias/provincias.service';
+import { Pais } from '../../models/pais';
 import { Provincia } from '../../models/provincia';
 import { PaisesService } from '../../services/paises/paises.service';
-import { Pais } from '../../models/pais';
+import { ProvinciasService } from '../../services/provincias/provincias.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -52,7 +52,7 @@ export class ProvinciasComponent implements OnInit {
 
     this.provinciaForm.patchValue({
       nombre: provincia.nombre,
-      paisId: provincia.pais.id
+      paisId: provincia.pais?.id
     });
   }
 
@@ -62,7 +62,6 @@ export class ProvinciasComponent implements OnInit {
     this.idEditando = undefined;
     this.listarProvincias();
   }
-
 
   //Obtener provincias
   listarProvincias() {

@@ -16,6 +16,11 @@ export class ProvinciasService {
     return this.http.get<Provincia[]>(this.apiUrl);
   }
 
+  listarPorPais(paisId: number): Observable<Provincia[]>
+  {
+    return this.http.get<Provincia[]>(`${this.apiUrl}/pais/${paisId}`);
+  }
+
   guardar(provincia: Provincia): Observable<Provincia>
   {
     return this.http.post<Provincia>(this.apiUrl, provincia);
