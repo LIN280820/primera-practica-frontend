@@ -1,9 +1,21 @@
 import { Component } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [],
+  imports: [MatDialogModule, MatButtonModule],
   templateUrl: './confirm-dialog.html',
-  styleUrl: './confirm-dialog.css',
 })
-export class ConfirmDialog {}
+export class ConfirmDialogComponent {
+
+  constructor(private dialogRef: MatDialogRef<ConfirmDialogComponent>) {}
+
+  cancelar() {
+    this.dialogRef.close(false);
+  }
+
+  confirmar() {
+    this.dialogRef.close(true);
+  }
+}

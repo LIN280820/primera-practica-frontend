@@ -13,7 +13,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-personas',
@@ -24,7 +26,9 @@ import { MatListModule } from '@angular/material/list';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatListModule],
+    MatListModule,
+    MatDialogModule,
+    MatSnackBarModule],
   templateUrl: './personas.component.html',
   styleUrl: './personas.component.css',
 })
@@ -37,7 +41,7 @@ export class PersonasComponent implements OnInit {
   idEditando?: number;
 
   constructor(private personasService: PersonasService, private provinciasService: ProvinciasService,
-    private paisesService: PaisesService, private fb: FormBuilder) { }
+    private paisesService: PaisesService, private fb: FormBuilder, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     //Construir los formularion
@@ -54,6 +58,12 @@ export class PersonasComponent implements OnInit {
     this.listarPersonas();
   }
 
+  mostrarMensaje(mensaje: string) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000
+    });
+  }
+
   limpiarFormulario() {
     this.personaForm.reset();
     this.editando = false;
@@ -62,8 +72,7 @@ export class PersonasComponent implements OnInit {
     this.listarPersonas();
   }
 
-  editar(persona: Persona)
-  {
+  editar(persona: Persona) {
     this.editando = true;
     this.idEditando = persona.id;
 
@@ -127,6 +136,7 @@ export class PersonasComponent implements OnInit {
     if (this.editando && this.idEditando) {
       this.personasService.actualizar(this.idEditando, persona).subscribe({
         next: () => {
+          this.mostrarMensaje('Persona actualizada correctamente');
           this.limpiarFormulario();
         }
       });
@@ -134,6 +144,7 @@ export class PersonasComponent implements OnInit {
     else {
       this.personasService.guardar(persona).subscribe({
         next: () => {
+          this.mostrarMensaje('Persona registrada correctamente');
           this.limpiarFormulario();
         }
       });
@@ -141,6 +152,14 @@ export class PersonasComponent implements OnInit {
   }
 
   eliminar(id: number) {
-    this.personasService.eliminar(id).subscribe({ next: () => { this.listarPersonas() } });
+    const dialogo = this.dialog.open(ConfirmDialogComponent);
+
+    dialogo.afterClosed().subscribe({
+      next: (confirmado) => {
+        if (confirmado) {
+          this.personasService.eliminar(id).subscribe({ next: () => { this.listarPersonas(); } });
+        }
+      }
+    });
   }
 }

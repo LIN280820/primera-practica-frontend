@@ -11,6 +11,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-provincias',
@@ -21,7 +24,9 @@ import { MatListModule } from '@angular/material/list';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatListModule],
+    MatListModule,
+    MatDialogModule,
+    MatSnackBarModule],
   templateUrl: './provincias.component.html',
   styleUrl: './provincias.component.css',
 })
@@ -32,7 +37,7 @@ export class ProvinciasComponent implements OnInit {
   editando = false;
   idEditando?: number;
 
-  constructor(private paisService: PaisesService, private provinciasService: ProvinciasService, private fb: FormBuilder) { }
+  constructor(private paisService: PaisesService, private provinciasService: ProvinciasService, private fb: FormBuilder, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     //Construir los formularion
@@ -44,6 +49,12 @@ export class ProvinciasComponent implements OnInit {
     //Carga los datos
     this.listarProvincias();
     this.listarPaises();
+  }
+
+  mostrarMensaje(mensaje: string) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000
+    });
   }
 
   editar(provincia: Provincia) {
@@ -88,6 +99,7 @@ export class ProvinciasComponent implements OnInit {
     if (this.editando && this.idEditando) {
       this.provinciasService.actualizar(this.idEditando, provincia).subscribe({
         next: () => {
+          this.mostrarMensaje('Provincia actualizada correctamente');
           this.limpiarFormulario();
         }
       });
@@ -95,6 +107,7 @@ export class ProvinciasComponent implements OnInit {
     else {
       this.provinciasService.guardar(provincia).subscribe({
         next: () => {
+          this.mostrarMensaje('Provincia registrada correctamente');
           this.limpiarFormulario();
         }
       });
@@ -103,6 +116,13 @@ export class ProvinciasComponent implements OnInit {
 
   //Eliminar provincia
   eliminar(id: number) {
-    this.provinciasService.eliminar(id).subscribe({ next: () => { this.listarProvincias() } });
+    const dialogo = this.dialog.open(ConfirmDialogComponent);
+    dialogo.afterClosed().subscribe({
+      next: (confirmado) => {
+        if (confirmado) {
+          this.provinciasService.eliminar(id).subscribe({ next: () => { this.listarProvincias(); } });
+        }
+      }
+    });
   }
 }

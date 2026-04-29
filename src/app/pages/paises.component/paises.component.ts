@@ -8,6 +8,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-paises',
@@ -19,7 +22,9 @@ import { MatListModule } from '@angular/material/list';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatListModule],
+    MatListModule,
+    MatDialogModule,
+    MatSnackBarModule],
   templateUrl: './paises.component.html',
   styleUrl: './paises.component.css',
 })
@@ -30,13 +35,19 @@ export class PaisesComponent implements OnInit {
   editando = false;
   idEditando?: number;
 
-  constructor(private paisesService: PaisesService, private fb: FormBuilder) {
+  constructor(private paisesService: PaisesService, private fb: FormBuilder, private dialog: MatDialog, private snackBar: MatSnackBar) {
 
   }
 
   ngOnInit(): void {
     this.paisForm = this.fb.group({ nombre: ['', Validators.required] });
     this.listarPaises();
+  }
+
+  mostrarMensaje(mensaje: string) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000
+    });
   }
 
   editar(pais: Pais) {
@@ -69,6 +80,7 @@ export class PaisesComponent implements OnInit {
     if (this.editando && this.idEditando) {
       this.paisesService.actualizar(this.idEditando, pais).subscribe({
         next: () => {
+          this.mostrarMensaje('País actualizado correctamente');
           this.limpiarFormulario();
         }
       });
@@ -76,6 +88,7 @@ export class PaisesComponent implements OnInit {
     else {
       this.paisesService.guardar(pais).subscribe({
         next: () => {
+          this.mostrarMensaje('País registrado correctamente');
           this.limpiarFormulario()
         }
       });
@@ -83,6 +96,13 @@ export class PaisesComponent implements OnInit {
   }
 
   eliminar(id: number) {
-    this.paisesService.eliminar(id).subscribe({ next: () => this.listarPaises() });
+    const dialogo = this.dialog.open(ConfirmDialogComponent);
+    dialogo.afterClosed().subscribe({
+      next: (confirmado) => {
+        if (confirmado) {
+          this.paisesService.eliminar(id).subscribe({ next: () => { this.listarPaises(); } });
+        }
+      }
+    });
   }
 }
